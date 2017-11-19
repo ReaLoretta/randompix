@@ -10,4 +10,5 @@ func main() {
 		output += string(getRandomByte())
 	}
 	fmt.Println(output)
+	fmt.Println(checkQuota())
 }

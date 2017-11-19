@@ -28,3 +28,25 @@ func getRandomByte() byte {
 
 	return uint8(randomNumber)
 }
+
+func checkQuota() int64 {
+	resp, err := http.Get("https://www.random.org/quota/?format=plain")
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	quotaBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	quotaString := strings.Trim(string(quotaBytes), "\n")
+
+	quota, err := strconv.ParseInt(quotaString, 10, 64)
+	if err != nil {
+		panic(err)
+	}
+
+	return quota
+}
