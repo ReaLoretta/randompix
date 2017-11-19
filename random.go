@@ -8,7 +8,15 @@ import (
 	"time"
 )
 
+var byteStore []byte
+
 func getRandomByte() byte {
+	// use up local random bytes first
+	var storedByte byte
+	if len(byteStore) > 0 {
+		storedByte, byteStore = byteStore[0], byteStore[1:]
+		return storedByte
+	}
 
 	// Before getting data, check available bits
 	for {
@@ -18,7 +26,7 @@ func getRandomByte() byte {
 		time.Sleep(10 * time.Minute) // as recommended by Random.org
 	}
 
-	resp, err := http.Get("https://www.random.org/integers/?num=1&min=0&max=255&col=1&base=10&format=plain&rnd=new")
+	resp, err := http.Get("https://www.random.org/integers/?num=1000&min=0&max=255&col=1&base=10&format=plain&rnd=new")
 	if err != nil {
 		panic(err)
 	}
@@ -29,14 +37,18 @@ func getRandomByte() byte {
 		panic(err)
 	}
 
-	randomNumberString := strings.Trim(string(randomNumberBytes), "\n")
+	randomNumberStringArray := strings.Split(strings.Trim(string(randomNumberBytes), "\n"), "\n")
 
-	randomNumber, err := strconv.ParseUint(randomNumberString, 10, 8)
-	if err != nil {
-		panic(err)
+	for _, randomNumberString := range randomNumberStringArray {
+		randomNumber, err := strconv.ParseUint(randomNumberString, 10, 8)
+		if err != nil {
+			panic(err)
+		}
+		byteStore = append(byteStore, uint8(randomNumber))
 	}
 
-	return uint8(randomNumber)
+	storedByte, byteStore = byteStore[0], byteStore[1:]
+	return storedByte
 }
 
 func checkQuota() int64 {
