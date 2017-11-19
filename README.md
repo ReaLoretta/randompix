@@ -1,0 +1,2 @@
+# randompix
+generates random bmp
