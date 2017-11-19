@@ -5,9 +5,19 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func getRandomByte() byte {
+
+	// Before getting data, check available bits
+	for {
+		if checkQuota() >= 0 {
+			break
+		}
+		time.Sleep(10 * time.Minute) // as recommended by Random.org
+	}
+
 	resp, err := http.Get("https://www.random.org/integers/?num=1&min=0&max=255&col=1&base=10&format=plain&rnd=new")
 	if err != nil {
 		panic(err)

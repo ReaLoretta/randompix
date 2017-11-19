@@ -10,5 +10,5 @@ func main() {
 		output += string(getRandomByte())
 	}
 	fmt.Println(output)
-	fmt.Println(checkQuota())
+	fmt.Printf("Bits left: %d\n", checkQuota())
 }
